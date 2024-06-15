@@ -1,4 +1,4 @@
-import { decode } from '@msgpack/msgpack';
+import { decode } from "@msgpack/msgpack";
 
 export class WorkerMock {
   onmessage: ((this: Worker, ev: MessageEvent<any>) => any) | null = null;
@@ -12,14 +12,14 @@ export class WorkerMock {
       // Simulate the worker processing
       try {
         const { func, data: encodedData } = data;
-        const taskFn = new Function('return ' + func)();
+        const taskFn = new Function("return " + func)();
         const decodedData = decode(new Uint8Array(encodedData));
         const result = taskFn(decodedData);
-        const event = new MessageEvent('message', { data: result });
+        const event = new MessageEvent("message", { data: result });
         this.onmessage(event);
       } catch (error) {
         if (this.onerror) {
-          this.onerror(new ErrorEvent('error', { message: error.message }));
+          this.onerror(new ErrorEvent("error", { message: error.message }));
         }
       }
     }
@@ -30,13 +30,13 @@ export class WorkerMock {
   }
 
   addEventListener(event: string, listener: Function) {
-    if (event === 'message') {
+    if (event === "message") {
       this.messageListeners.push(listener);
     }
   }
 
   removeEventListener(event: string, listener: Function) {
-    if (event === 'message') {
+    if (event === "message") {
       this.messageListeners = this.messageListeners.filter(
         (l) => l !== listener
       );
