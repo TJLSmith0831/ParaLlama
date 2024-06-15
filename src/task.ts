@@ -1,7 +1,7 @@
-import { encode, decode } from '@msgpack/msgpack';
-import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Llama } from './llama';
+import { encode, decode } from "@msgpack/msgpack";
+import { Observable, from } from "rxjs";
+import { map } from "rxjs/operators";
+import { Llama } from "./llama";
 
 /**
  * Task class representing a unit of work to be executed.
@@ -9,9 +9,10 @@ import { Llama } from './llama';
  * for efficient transfer and execution in a parallel processing environment.
  */
 export class Task {
+  public taskId: string;
   public taskData: Uint8Array;
   public taskFn: string;
-  private llama: Llama | null = null;
+  private llama: Llama;
 
   /**
    * Creates a new Task.
@@ -27,15 +28,17 @@ export class Task {
     public func: Function
   ) {
     if (!id) {
-      throw new Error('Task ID is required');
+      throw new Error("Task ID is required");
     }
     if (!data) {
-      throw new Error('Task data is required');
+      throw new Error("Task data is required");
     }
-    if (typeof func !== 'function') {
-      throw new Error('Task function must be a valid function');
+    if (typeof func !== "function") {
+      throw new Error("Task function must be a valid function");
     }
 
+    this.llama = new Llama();
+    this.taskId = id;
     this.taskData = new Uint8Array(encode(data));
     this.taskFn = func.toString();
   }
@@ -69,7 +72,7 @@ export class Task {
    */
   updateData(newData: any) {
     if (!newData) {
-      throw new Error('newData is required');
+      throw new Error("newData is required");
     }
     if (this.isLargeDataset(newData)) {
       this.encodeDataObservable(newData).subscribe({
@@ -95,10 +98,10 @@ export class Task {
    */
   updateTaskFn(newTaskFn: Function) {
     if (!newTaskFn) {
-      throw new Error('newTaskFn is required');
+      throw new Error("newTaskFn is required");
     }
-    if (typeof newTaskFn !== 'function') {
-      throw new Error('newTaskFn function must be a valid function');
+    if (typeof newTaskFn !== "function") {
+      throw new Error("newTaskFn function must be a valid function");
     }
     this.taskFn = newTaskFn.toString();
   }
@@ -153,7 +156,7 @@ export class Task {
 
     try {
       const func = new Function(`return ${this.taskFn}`)();
-      if (typeof func !== 'function') {
+      if (typeof func !== "function") {
         return false;
       }
     } catch {
