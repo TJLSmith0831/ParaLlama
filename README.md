@@ -35,5 +35,5 @@ To install ParaLlama, you need to have Yarn installed. If you don't have Yarn in
 
 ```bash
 # Install ParaLlama
-yarn add ParaLLama
+yarn add ParaLlama
 ```
